@@ -1,17 +1,19 @@
 import React, {useState, useEffect} from "react"
-import pieceImages from './pieceImages'
+import pieceImages from "./pieceImages"
+import moveList from "./moveList"
 
 function Piece(props) {
     const [coordinates, setCoordinates] = useState([0, 0]);
     const [offset, setOffset] = useState([0, 0]);
     const [selected, setSelected] = useState(false);
-    const [lastMove, setLastMove] = useState([-1, -1]);
+    const [lastMove, setLastMove] = useState();
     const [img, setImg] = useState()
+    const [renderMe, setRenderMe] = useState(true)
 
     // Set the initial x, y variables
     useEffect(() => {
         setImg(pieceImages[props.pieceType][props.pieceColor])
-
+        setLastMove([indexCoordinates(props.startX, 0), indexCoordinates(props.startY, 1)])
         setCoordinates([props.startX, props.startY])
     }, [])
 
@@ -24,9 +26,9 @@ function Piece(props) {
         const elem = target.getBoundingClientRect();
         if (!selected) {
             setOffset([elem.right - props.mouseX, elem.top - props.mouseY])
-
-            setLastMove([indexCoordinates(props.mouseX, 0), indexCoordinates(props.mouseY, 1)])
         }
+
+        setLastMove([indexCoordinates(props.mouseX, 0), indexCoordinates(props.mouseY, 1)])
 
         setSelected(true)
     }
@@ -38,13 +40,24 @@ function Piece(props) {
         let col = indexCoordinates(props.mouseX, 0)
         let row = indexCoordinates(props.mouseY, 1)
 
-        // Here, temporary valid move list
-        let moveList = props.pieceColor === "white" ? [[lastMove[0], lastMove[1]+1]] : [[lastMove[0], lastMove[1]-1]]
+        let thisMoveList = moveList[props.pieceType][props.pieceColor].map((move) => {
+            let possibleCol = lastMove[0] + move[0]
+            let possibleRow = lastMove[1] + move[1]
 
-        if (props.validMove(lastMove[0], lastMove[1], col, row, moveList)) {
+            if (possibleRow >= 0 && possibleRow <= 7 && possibleCol >= 0 && possibleCol <= 7) {
+                return [possibleCol, possibleRow]
+            } 
+            return lastMove
+        })
+
+        console.log(thisMoveList)
+
+        if (props.validMove(lastMove[0], lastMove[1], col, row, thisMoveList)) {
+            // Put in new position
             setCoordinates([(col * props.tileSize) + props.boardCoords[0], (row * props.tileSize) + props.boardCoords[1]])
             setLastMove([col, row])
         } else {
+            // Put in previous spot
             setCoordinates([props.boardCoords[0] + (lastMove[0] * props.tileSize), props.boardCoords[1] + (lastMove[1] * props.tileSize)])
         }
     }
@@ -64,6 +77,20 @@ function Piece(props) {
         updatePosition()
     }, [props.mouseX, props.mouseY])
 
+    // Check to see if this spot was overwritten (piece taken)
+    useEffect(() => {
+        if (lastMove) {
+            if (lastMove[1] >= 0 && lastMove[1] <= 7 && lastMove[0] >= 0 && lastMove[0] <= 7) {
+                let nextSpot = props.gameStateArray[lastMove[1]][lastMove[0]];
+
+                if (nextSpot !== `${props.pieceColor}${props.pieceType}` && nextSpot !== ' ') {
+                    setRenderMe(false)
+                    return
+                }
+            }
+        }
+    }, [props.gameStateArray])
+
     const styles = {
         top: coordinates[1], 
         left: coordinates[0], 
@@ -71,14 +98,17 @@ function Piece(props) {
         zIndex: selected ? "10" : "9"
     }
 
-    return(
-        <div
-            onMouseDown={clickDown}
-            onMouseUp={clickRelease}
-            style={styles}
-            className="piece">
-            <img style={{width: props.tileSize}} src={img} alt="Chess Piece"></img>
-        </div>
+    return (
+        <>
+        {renderMe && 
+            <div
+                onMouseDown={clickDown}
+                onMouseUp={clickRelease}
+                style={styles}
+                className="piece">
+                <img style={{width: props.tileSize}} src={img} alt="Chess Piece"></img>
+            </div>}
+        </>
     )
 }
 

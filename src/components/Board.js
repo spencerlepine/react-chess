@@ -14,35 +14,41 @@ function Board() {
     const { x, y } = useMousePosition();
 
     function validMove(lastC, lastR, newC, newR, moveList) {
+        if (lastC === newC && lastR === newR) {
+            return false
+        }
+
+        let thisPiece = `${gameStateArray[lastR][lastC]}`
         for (let i = 0, l = moveList.length; i < l; i++) {
             if (moveList[i][0] === newC && moveList[i][1] === newR) {
-                if (gameStateArray[newR][newC] === ' ') {
-                    setGameStateArray((prevArray) => {
-                        let newArray = [...prevArray]
-                        newArray[newR][newC] = 'X'
-                        newArray[lastR][lastC] = ' '
-                        
-                        return newArray
-                    })
-                    return true
-                }
+                setGameStateArray((prevArray) => {
+                    let newArray = [...prevArray]
+                    newArray[newR][newC] = thisPiece
+                    newArray[lastR][lastC] = ' '
+                    return newArray
+                })
+                return true
             }
         }
     }
 
-    // Initialize the pieces array
+    //Initialize the pieces array
     const pieces = piecesArray.map((spot, i) => {
-    return (<Piece 
-                key={i}
-                startX={BOARD_COORDS[0] + (spot[1] * TILE_SIZE)}
-                startY={BOARD_COORDS[1] + (spot[0] * TILE_SIZE)}
-                pieceType={spot[2]}
-                pieceColor={spot[3]}
-                mouseX={x}
-                mouseY={y}
-                tileSize={TILE_SIZE}
-                boardCoords={BOARD_COORDS}
-                validMove={validMove} />)
+        return (
+                <Piece 
+                    key={i}
+                    startX={BOARD_COORDS[0] + (spot[1] * TILE_SIZE)}
+                    startY={BOARD_COORDS[1] + (spot[0] * TILE_SIZE)}
+                    pieceType={spot[2][1]}
+                    pieceColor={spot[2][0]}
+                    mouseX={x}
+                    mouseY={y}
+                    tileSize={TILE_SIZE}
+                    boardCoords={BOARD_COORDS}
+                    validMove={validMove} 
+                    gameStateArray={gameStateArray}
+                />
+        )
     })
 
     // Initialize the spots array

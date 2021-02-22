@@ -1,5 +1,5 @@
-const piecesArray = [[0, 0, 'rook', 'white'], [0, 1, 'bishop', 'white'], [0, 2, 'knight', 'white'], [0, 3, 'queen', 'white'], [0, 4, 'king', 'white'], [0, 5, 'knight', 'white'], [0, 6, 'bishop', 'white'], [0, 7, 'rook', 'white'], 
-                    [1, 0, 'pawn', 'white'],[1, 1, 'pawn', 'white'],[1, 2, 'pawn', 'white'],[1, 3, 'pawn', 'white'],[1, 4, 'pawn', 'white'],[1, 5, 'pawn', 'white'],[1, 6, 'pawn', 'white'],[1, 7, 'pawn', 'white'],
-                    [6, 0, 'pawn', 'black'],[6, 1, 'pawn', 'black'],[6, 2, 'pawn', 'black'],[6, 3, 'pawn', 'black'],[6, 4, 'pawn', 'black'],[6, 5, 'pawn', 'black'],[6, 6, 'pawn', 'black'],[6, 7, 'pawn', 'black'],
-                    [7, 0, 'rook', 'black'], [7, 1, 'bishop', 'black'], [7, 2, 'knight', 'black'], [7, 3, 'queen', 'black'], [7, 4, 'king', 'black'], [7, 5, 'knight', 'black'], [7, 6, 'bishop', 'black'], [7, 7, 'rook', 'black']];
+const piecesArray = [[0, 0, 'br'], [0, 1, 'bn'], [0, 2, 'bb'], [0, 3, 'bq'], [0, 4, 'bk'], [0, 5, 'bb'], [0, 6, 'bn'], [0, 7, 'br'], 
+                    [1, 0, 'bp'],[1, 1, 'bp'],[1, 2, 'bp'],[1, 3, 'bp'],[1, 4, 'bp'],[1, 5, 'bp'],[1, 6, 'bp'],[1, 7, 'bp'],
+                    [6, 0, 'wp'],[6, 1, 'wp'],[6, 2, 'wp'],[6, 3, 'wp'],[6, 4, 'wp'],[6, 5, 'wp'],[6, 6, 'wp'],[6, 7, 'wp'],
+                    [7, 0, 'wr'], [7, 1, 'wn'], [7, 2, 'wb'], [7, 3, 'wq'], [7, 4, 'wk'], [7, 5, 'wb'], [7, 6, 'wn'], [7, 7, 'wr']];
 export default piecesArray
