@@ -5,6 +5,8 @@
 - Piece svgs
 - https://www.joshwcomeau.com/react/announcing-use-sound-react-hook/
 - flip the board around (fix valid moves) - set piece direction
-- move list based on type (then use color)
-- eating other pieces
+
 - casteling, pawn double move (track turns)
+- pawn captures
+- pawn double move
+- on top of itself

@@ -21,6 +21,10 @@ function Board() {
         let thisPiece = `${gameStateArray[lastR][lastC]}`
         for (let i = 0, l = moveList.length; i < l; i++) {
             if (moveList[i][0] === newC && moveList[i][1] === newR) {
+
+                // If something is blocking the path
+                
+
                 setGameStateArray((prevArray) => {
                     let newArray = [...prevArray]
                     newArray[newR][newC] = thisPiece

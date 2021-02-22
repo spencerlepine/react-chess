@@ -50,8 +50,6 @@ function Piece(props) {
             return lastMove
         })
 
-        console.log(thisMoveList)
-
         if (props.validMove(lastMove[0], lastMove[1], col, row, thisMoveList)) {
             // Put in new position
             setCoordinates([(col * props.tileSize) + props.boardCoords[0], (row * props.tileSize) + props.boardCoords[1]])
