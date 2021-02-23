@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from "react"
 import pieceImages from "./pieceImages"
-import moveList from "./moveList"
 
 function Piece(props) {
     const [coordinates, setCoordinates] = useState([0, 0]);
@@ -23,6 +22,13 @@ function Piece(props) {
 
     // Pick up the piece, start following the mouse
     function clickDown({ target }) {
+        // Don't grab piece if it isn't your turn
+        if (props.turn !== props.pieceColor) {
+            return
+        }
+
+        props.savePossibleMoves(lastMove[0], lastMove[1], props.pieceType, props.pieceColor)
+
         const elem = target.getBoundingClientRect();
         if (!selected) {
             setOffset([elem.right - props.mouseX, elem.top - props.mouseY])
@@ -36,23 +42,15 @@ function Piece(props) {
     // Drop the piece, or put in back in its valid spot
     function clickRelease() {
         setSelected(false)
+        props.clearPossibleMoves()
 
         let col = indexCoordinates(props.mouseX, 0)
         let row = indexCoordinates(props.mouseY, 1)
 
-        let thisMoveList = moveList[props.pieceType][props.pieceColor].map((move) => {
-            let possibleCol = lastMove[0] + move[0]
-            let possibleRow = lastMove[1] + move[1]
-
-            if (possibleRow >= 0 && possibleRow <= 7 && possibleCol >= 0 && possibleCol <= 7) {
-                return [possibleCol, possibleRow]
-            } 
-            return lastMove
-        })
-
-        if (props.validMove(lastMove[0], lastMove[1], col, row, thisMoveList)) {
+        if (props.validMove(lastMove[0], lastMove[1], col, row, props.pieceColor, props.pieceType)) {
             // Put in new position
             setCoordinates([(col * props.tileSize) + props.boardCoords[0], (row * props.tileSize) + props.boardCoords[1]])
+            props.changeTurn()
             setLastMove([col, row])
         } else {
             // Put in previous spot
