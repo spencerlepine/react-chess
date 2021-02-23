@@ -6,7 +6,7 @@ import piecesArray from "./piecesArray"
 import gameArray from "./gameArray"
 import moveList from "./moveList"
 
-const TILE_SIZE = 100;
+const TILE_SIZE = 80;
 const BOARD_COORDS = [50, 50];
 
 function Board() {
@@ -16,6 +16,10 @@ function Board() {
 
     const { x, y } = useMousePosition();
 
+    function resetGame() {
+        window.location.reload()
+    }
+
     function causesJump(lastC, lastR, newC, newR, pieceType) {
         if (gameStateArray[lastR][lastC][1] !== 'n') {
             // Assume xDif and yDif are equal
@@ -24,7 +28,7 @@ function Board() {
 
             if (Math.abs(xDif) > 1 && Math.abs(yDif) > 1) {
                 // get the spots inbetween and make sure they are all empty
-                for (let d = 1; d <= Math.abs(xDif); d++) {
+                for (let d = 1; d < Math.abs(xDif); d++) {
                     if (gameStateArray[lastR + (d*(yDif < 0 ? -1: 1))][lastC + (d*(xDif < 0 ? -1: 1))] !== ' ') {
                         return true
                     }
@@ -32,13 +36,13 @@ function Board() {
             } else if (Math.abs(xDif) > 1 && yDif === 0) {
                 let direction = (xDif < 0 ? -1: 1)
 
-                for (let d = 1; d <= Math.abs(xDif); d++) {
+                for (let d = 1; d < Math.abs(xDif); d++) {
                     if (gameStateArray[lastR][lastC + (d*direction)] !== ' ') {
                         return true
                     }
                 }
             } else if (Math.abs(yDif) > 1 && xDif === 0) {
-                for (let d = 1; d <= Math.abs(yDif); d++) {
+                for (let d = 1; d < Math.abs(yDif); d++) {
                     
                     let direction = (yDif < 0 ? -1: 1)
                     if (gameStateArray[lastR + (d*direction)][lastC] !== ' ') {
@@ -58,14 +62,21 @@ function Board() {
         for (let i = 0, l = possibleMoves.length; i < l; i++) {
             if (possibleMoves[i][0] === newC && possibleMoves[i][1] === newR) {
 
-                // Is this a jump
-                // cuasesJump(currentC, currentR, )
                 if (causesJump(lastC, lastR, newC, newR)) {
                     return false
                 }
             
                 setGameStateArray((prevArray) => {
                     let newArray = [...prevArray]
+
+                    if (newArray[newR][newC] === 'wk') {
+                        alert("Black wins!");
+                        setTurn('')
+                    } else if (newArray[newR][newC] === 'bk') {
+                        alert("White wins!");
+                        setTurn('')
+                    }
+
                     newArray[newR][newC] = thisPiece
                     newArray[lastR][lastC] = ' '
                     return newArray
@@ -87,6 +98,7 @@ function Board() {
             setTurn('w')
         }
     }
+
     function savePossibleMoves(currentC, currentR, pieceType, pieceColor) {
         // Filter out the obvious impossible moves
         let availableMoves = moveList[pieceType][pieceColor].map((move) => {
@@ -159,6 +171,8 @@ function Board() {
         <div className="chessBoard" style={styles}>
             {pieces}
             {spots}
+            <p style={{position: "absolute", top: "103%"}}>{turn === "w" ? "White's turn" : "Black's turn"}</p>
+            <button className="resetButton" onClick={resetGame}>New game</button>
         </div>
     )
 }

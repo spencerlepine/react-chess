@@ -12,6 +12,8 @@
 .chessBoard {
   position: fixed;
   z-index: 0;
+  -webkit-box-shadow: 1px 1px 0px 19px #332a00;
+  box-shadow: 1px 1px 0px 19px #332a00;
 }
 
 .piece {
@@ -25,4 +27,24 @@
   -moz-user-drag: none;
   -o-user-drag: none;
   /* user-drag: none; */
+}
+
+.resetButton {
+  position: absolute;
+  top: 103%;
+  padding: 10px 20px;
+  margin: 5px 0px 5px 5px;
+  right: -20px;
+  color: #f5de9d;
+  font-weight: bolder;
+  text-transform: uppercase;
+  background-color: #73582f;
+}
+
+.chessBoard p {
+  left: -20px;
+  padding: 10px 20px;
+  margin: 3px;
+  color: #060606;
+  border: 3px solid #9a9a9a;
 }

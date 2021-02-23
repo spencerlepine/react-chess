@@ -3,17 +3,26 @@ import React, { useState, useEffect } from "react"
 function Spot(props) {
     const [showHighlight, setShowHighlight] = useState(false)
 
+    let highlight = null
+    
+    if (props.possibleMoves.length > 0) {
+        let current = props.possibleMoves[0];
+        if (current[0] === props.col && current[1] === props.row) {
+            highlight = "orange";
+        }
+    }
+
     let styles = {
         width: props.tileSize,
         height: props.tileSize,
-        backgroundColor: props.spotColor,
+        backgroundColor: highlight || props.spotColor,
         userSelect: "none",
         zIndex: 1,
         position: "fixed",
         top: props.startY,
         left: props.startX,
     }
-
+    
     useEffect(() => {
         if (props.possibleMoves.length === 0) {
             setShowHighlight(false);
@@ -31,7 +40,9 @@ function Spot(props) {
         }
     }, [props.possibleMoves])
 
-    return(
+    
+
+    return (
         <div style={styles}>
             <div style={{backgroundColor: "#0000004f", 
                 borderRadius: "50%", 
