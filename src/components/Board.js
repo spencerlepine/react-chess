@@ -6,7 +6,7 @@ import piecesArray from "./piecesArray"
 import gameArray from "./gameArray"
 import moveList from "./moveList"
 
-const TILE_SIZE = 80;
+const TILE_SIZE = 100;
 const BOARD_COORDS = [50, 50];
 
 function Board() {
@@ -15,6 +15,39 @@ function Board() {
     const [turn, setTurn] = useState('w')
 
     const { x, y } = useMousePosition();
+
+    function causesJump(lastC, lastR, newC, newR, pieceType) {
+        if (gameStateArray[lastR][lastC][1] !== 'n') {
+            // Assume xDif and yDif are equal
+            let xDif = newC - lastC
+            let yDif = newR - lastR
+
+            if (Math.abs(xDif) > 1 && Math.abs(yDif) > 1) {
+                // get the spots inbetween and make sure they are all empty
+                for (let d = 1; d <= Math.abs(xDif); d++) {
+                    if (gameStateArray[lastR + (d*(yDif < 0 ? -1: 1))][lastC + (d*(xDif < 0 ? -1: 1))] !== ' ') {
+                        return true
+                    }
+                }
+            } else if (Math.abs(xDif) > 1 && yDif === 0) {
+                let direction = (xDif < 0 ? -1: 1)
+
+                for (let d = 1; d <= Math.abs(xDif); d++) {
+                    if (gameStateArray[lastR][lastC + (d*direction)] !== ' ') {
+                        return true
+                    }
+                }
+            } else if (Math.abs(yDif) > 1 && xDif === 0) {
+                for (let d = 1; d <= Math.abs(yDif); d++) {
+                    
+                    let direction = (yDif < 0 ? -1: 1)
+                    if (gameStateArray[lastR + (d*direction)][lastC] !== ' ') {
+                        return true
+                    }
+                }
+            }
+        }
+    }
 
     function validMove(lastC, lastR, newC, newR, pieceColor, pieceType) {
         if (lastC === newC && lastR === newR) {
@@ -26,36 +59,10 @@ function Board() {
             if (possibleMoves[i][0] === newC && possibleMoves[i][1] === newR) {
 
                 // Is this a jump
-                if (pieceType !== 'n') {
-                    // Assume xDif and yDif are equal
-                    let xDif = newC - lastC
-                    let yDif = newR - lastR
-                    let shiftX = lastC + (xDif < 0 ? -1: 1)
-                    let shiftY = lastR + (yDif < 0 ? -1: 1)
-
-
-                    if (Math.abs(xDif) > 1 && Math.abs(yDif) > 1) {
-                        // get the spots inbetween and make sure they are all empty
-                        for (let d = 1; d < Math.abs(xDif); d++) {
-                            if (gameStateArray[shiftY][shiftX] !== ' ') {
-                                return false
-                            }
-                        }
-                    } else if (Math.abs(xDif) > 1 && yDif === 0) {
-                        for (let d = 1; d < Math.abs(xDif); d++) {
-                            if (gameStateArray[lastR][shiftX] !== ' ') {
-                                return false
-                            }
-                        }
-                    } else if (Math.abs(yDif) > 1 && xDif === 0) {
-                        for (let d = 1; d < Math.abs(yDif); d++) {
-                            if (gameStateArray[shiftY][lastC] !== ' ') {
-                                return false
-                            }
-                        }
-                    }
+                // cuasesJump(currentC, currentR, )
+                if (causesJump(lastC, lastR, newC, newR)) {
+                    return false
                 }
-
             
                 setGameStateArray((prevArray) => {
                     let newArray = [...prevArray]
@@ -85,10 +92,6 @@ function Board() {
         let availableMoves = moveList[pieceType][pieceColor].map((move) => {
             let possibleCol = currentC + move[0]
             let possibleRow = currentR + move[1]
-            
-
-            // Only eat other pieces
-
 
             // If this move is within the board boundaries
             if (possibleRow >= 0 && possibleRow <= 7 && possibleCol >= 0 && possibleCol <= 7) {
@@ -100,7 +103,7 @@ function Board() {
             return []
         })
 
-        setPossibleMoves(availableMoves)
+        setPossibleMoves([[currentC, currentR], ...availableMoves])
     }
 
     //Initialize the pieces array
@@ -138,7 +141,8 @@ function Board() {
                         spotColor={(r + c) % 2 ? "#b48766" : "#f0d9b7"}
                         possibleMoves={possibleMoves}
                         col={c}
-                        row={r} />
+                        row={r}
+                        causesJump={causesJump} />
                 )
             })
         )

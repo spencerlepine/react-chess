@@ -20,7 +20,11 @@ function Spot(props) {
         } else {
             for (let i = 0, l = props.possibleMoves.length; i < l; i++) {
                 if (props.possibleMoves[i][0] === props.col && props.possibleMoves[i][1] === props.row) {
-                    setShowHighlight(true)
+
+                    let current = props.possibleMoves[0]
+                    if (i > 0 && !props.causesJump(current[0], current[1], props.col, props.row)) {
+                        setShowHighlight(true)
+                    }
                     break
                 }
             }
@@ -32,8 +36,9 @@ function Spot(props) {
             <div style={{backgroundColor: "#0000004f", 
                 borderRadius: "50%", 
                 display: showHighlight ? "block" : "none", 
-                width: "100%", 
-                height: "100%"}}>
+                width: props.tileSize*.4, 
+                height: props.tileSize*.4,
+                margin: props.tileSize*.3}}>
             </div>
         </div>
     )
