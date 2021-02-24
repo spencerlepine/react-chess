@@ -8,12 +8,14 @@ function Piece(props) {
     const [lastMove, setLastMove] = useState();
     const [img, setImg] = useState()
     const [renderMe, setRenderMe] = useState(true)
+    const [thisPieceType, setPieceType] = useState()
 
     // Set the initial x, y variables
     useEffect(() => {
         setImg(pieceImages[props.pieceType][props.pieceColor])
         setLastMove([indexCoordinates(props.startX, 0), indexCoordinates(props.startY, 1)])
         setCoordinates([props.startX, props.startY])
+        setPieceType(props.pieceType)
     }, [])
 
     function indexCoordinates(coord, coordNum) {
@@ -27,7 +29,7 @@ function Piece(props) {
             return
         }
 
-        props.savePossibleMoves(lastMove[0], lastMove[1], props.pieceType, props.pieceColor)
+        props.savePossibleMoves(lastMove[0], lastMove[1], thisPieceType, props.pieceColor)
 
         const elem = target.getBoundingClientRect();
         if (!selected) {
@@ -47,10 +49,10 @@ function Piece(props) {
         let col = indexCoordinates(props.mouseX, 0)
         let row = indexCoordinates(props.mouseY, 1)
 
-        if (props.validMove(lastMove[0], lastMove[1], col, row, props.pieceColor, props.pieceType)) {
+        if (props.validMove(lastMove[0], lastMove[1], col, row, props.pieceColor, thisPieceType)) {
             // If this disables the castle 
             /*--------------------------------------------------------*/
-            let thisPiece = `${props.pieceColor + props.pieceType}`
+            let thisPiece = `${props.pieceColor + thisPieceType}`
             if (thisPiece === 'br') {
                 props.setCastleStatus((prevStatus) => {
                     let newStatus = [...prevStatus]
@@ -95,6 +97,14 @@ function Piece(props) {
             props.changeTurn()
             setLastMove([col, row])
 
+            if (props.pieceColor === 'w' && row === 0) {
+                setPieceType('q')
+                setImg(pieceImages['q'][props.pieceColor])
+            } else if (props.pieceColor === 'b' && row === 7) {
+                setPieceType('q')
+                setImg(pieceImages['q'][props.pieceColor])
+            } 
+            
         } else {
             // Put in previous spot
             setCoordinates([props.boardCoords[0] + (lastMove[0] * props.tileSize), props.boardCoords[1] + (lastMove[1] * props.tileSize)])
@@ -105,7 +115,7 @@ function Piece(props) {
     useEffect(() => {
         // Make sure the rook exists!
         // Make sure they back row is open
-        if (props.pieceType === 'r' && lastMove) {
+        if (thisPieceType === 'r' && lastMove) {
             if (lastMove[0] === 0 && lastMove[1] === 0 && props.castleStatus[0][0] === true) {
                 if (props.castleStatus[0][0] !== false && props.castleStatus[0][1] !== false && props.castleStatus[0][2] !== false) {
                     //console.log("Castle the top left rook")
@@ -158,7 +168,7 @@ function Piece(props) {
             if (lastMove[1] >= 0 && lastMove[1] <= 7 && lastMove[0] >= 0 && lastMove[0] <= 7) {
                 let nextSpot = props.gameStateArray[lastMove[1]][lastMove[0]];
 
-                if (nextSpot !== `${props.pieceColor}${props.pieceType}` && nextSpot !== ' ') {
+                if (nextSpot !== `${props.pieceColor}${thisPieceType}` && nextSpot !== ' ') {
                     setRenderMe(false)
                     return
                 }

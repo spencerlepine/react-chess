@@ -148,7 +148,6 @@ function Board() {
                 }
             }
         }
-
         
         for (let i = 0, l = possibleMoves.length; i < l; i++) {
             if (possibleMoves[i][0] === newC && possibleMoves[i][1] === newR) {
@@ -170,6 +169,11 @@ function Board() {
                     }
 
                     newArray[newR][newC] = thisPiece
+
+                    if (thisPiece[1] === 'p' && (newR === 7 || newR === 0)) {
+                        newArray[newR][newC] = `${thisPiece[0]}q`
+                    }
+                    
                     newArray[lastR][lastC] = ' '
                     return newArray
                 })
