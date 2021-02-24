@@ -101,16 +101,35 @@ function Board() {
 
     function savePossibleMoves(currentC, currentR, pieceType, pieceColor) {
         // Filter out the obvious impossible moves
-        let availableMoves = moveList[pieceType][pieceColor].map((move) => {
+        let availableMoves = moveList[pieceType][pieceColor].map((move, i) => {
             let possibleCol = currentC + move[0]
             let possibleRow = currentR + move[1]
 
             // If this move is within the board boundaries
             if (possibleRow >= 0 && possibleRow <= 7 && possibleCol >= 0 && possibleCol <= 7) {
+                let spotPiece = gameStateArray[possibleRow][possibleCol] 
+                
+                // Pawn rules
+                if (pieceType === 'p') {
+                    if (i === 0 && spotPiece === ' ') {
+                        return [possibleCol, possibleRow]
+                    } else if (i > 0 && i < 3) {
+                        if (spotPiece !== ' ' && spotPiece[0] !== pieceColor) {
+                            return [possibleCol, possibleRow]
+                        }
+                    } else if (i === 3) {
+                        if (currentR === 6 && pieceColor === 'w' && spotPiece === ' ' && gameStateArray[possibleRow+1][possibleCol] === ' ') {
+                            return [possibleCol, possibleRow]
+                        } else if (currentR === 1 && pieceColor === 'b' && spotPiece === ' ' && gameStateArray[possibleRow-1][possibleCol] === ' ') {
+                            return [possibleCol, possibleRow]
+                        }
+                    }
+                }
+
                 // If this move is the opposite color
-                if (gameStateArray[possibleRow][possibleCol][0] !== turn) {
+                else if (spotPiece[0] !== pieceColor) {
                     return [possibleCol, possibleRow]
-                } 
+                }
             }
             return []
         })
