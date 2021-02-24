@@ -2,6 +2,11 @@
   text-align: center;
 }
 
+.at {
+  padding: 0;
+  margin: 5px;
+}
+
 .boardImg {
   width: 100%;
   height: 100%;
