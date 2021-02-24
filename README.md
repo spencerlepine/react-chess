@@ -1,11 +1,24 @@
 # Chess React App
 
+Play chess in the browser by with drag and drop moves. This was created using the Javascript React framework.
+
 ![Game Screenshot](./screenshot.jpg)
 
-### How to play:
-Click an drag piece to desired spots.
+### Overview:
+```<Board />``` component tracks the game state with an 2D 8x8 ```array```.  
+* ```<Piece />``` components are displayed based on coordinates.
+  * Each will handle when the user ***clicks*** and ***drags***
 
-## Todo:
-- Piece svgs
-- https://www.joshwcomeau.com/react/announcing-use-sound-react-hook/
-- (Image Conversion site)[https://www.pngtosvg.com/]
+* ```<Spot />``` components are rendered representing the checkers of the board
+    * Each will display a ***highlight*** circle if a piece can move there
+
+##### Other: 
+>```moveList.js``` contains an object addressed by [```pieceType```] to return valid chess moves.
+
+> Users drag and drop a piece each turn, and the ```gameStateArray``` will save that move.
+
+***
+#### Todo:
+- add sound?
+- flip board?
+- Better sprites: [PNG to SVG](https://www.pngtosvg.com/)
