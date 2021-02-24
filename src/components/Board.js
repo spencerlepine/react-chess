@@ -13,6 +13,7 @@ function Board() {
     const [gameStateArray, setGameStateArray] = useState(gameArray)
     const [possibleMoves, setPossibleMoves] = useState([])
     const [turn, setTurn] = useState('w')
+    const [castleStatus, setCastleStatus] = useState([[null, null, null], [null, null, null]])
 
     const { x, y } = useMousePosition();
 
@@ -54,25 +55,116 @@ function Board() {
     }
 
     function validMove(lastC, lastR, newC, newR, pieceColor, pieceType) {
+        // Don't repeat the same move
         if (lastC === newC && lastR === newR) {
             return false
         }
 
+        // Make sure it is within bounds
+        if (lastR < 0 || lastR > 7 || lastC < 0 || lastC > 7) {
+            return false
+        }
+
         let thisPiece = `${gameStateArray[lastR][lastC]}`
+        // IS THIS A CASTLE MOVE?
+        if (thisPiece === 'bk') {
+            if (newR === 0 && newC === 6) {
+                if (gameStateArray[0][5] === ' ' && gameStateArray[0][6] === ' ') {
+                    setCastleStatus((prevStatus) => {
+                        let newStatus = [...prevStatus]
+                        newStatus[0][2] = true
+                        return newStatus
+                    })
+
+                    setGameStateArray((prevArray) => {
+                        let newArray = [...prevArray]
+                        newArray[0][7] = ' '
+                        newArray[0][4] = ' '
+                        newArray[0][6] = 'bk'
+                        newArray[0][5] = 'br'
+                        return newArray
+                    })
+
+                    return true
+                }
+            } else if (newR === 0 && newC === 2) {
+                if (gameStateArray[0][2] === ' ' && gameStateArray[0][3] === ' ') {
+                    setCastleStatus((prevStatus) => {
+                        let newStatus = [...prevStatus]
+                        newStatus[0][0] = true
+                        return newStatus
+                    })
+
+                    setGameStateArray((prevArray) => {
+                        let newArray = [...prevArray]
+                        newArray[0][0] = ' '
+                        newArray[0][4] = ' '
+                        newArray[0][2] = 'bk'
+                        newArray[0][3] = 'br'
+                        return newArray
+                    })
+
+                    return true
+                }
+            }
+        } else if (thisPiece === 'wk') {
+            if (newR === 7 && newC === 6) {
+                if (gameStateArray[7][5] === ' ' && gameStateArray[7][6] === ' ') {
+                    setCastleStatus((prevStatus) => {
+                        let newStatus = [...prevStatus]
+                        newStatus[1][2] = true
+                        return newStatus
+                    })
+
+                    setGameStateArray((prevArray) => {
+                        let newArray = [...prevArray]
+                        newArray[7][7] = ' '
+                        newArray[7][4] = ' '
+                        newArray[7][6] = 'wk'
+                        newArray[7][5] = 'wr'
+                        return newArray
+                    })
+
+                    return true
+                }
+            } else if (newR === 7 && newC === 2) {
+                if (gameStateArray[7][2] === ' ' && gameStateArray[7][3] === ' ') {
+                    setCastleStatus((prevStatus) => {
+                        let newStatus = [...prevStatus]
+                        newStatus[1][0] = true
+                        return newStatus
+                    })
+
+                    setGameStateArray((prevArray) => {
+                        let newArray = [...prevArray]
+                        newArray[7][0] = ' '
+                        newArray[7][4] = ' '
+                        newArray[7][2] = 'wk'
+                        newArray[7][3] = 'wr'
+                        return newArray
+                    })
+
+                    return true
+                }
+            }
+        }
+
+        
         for (let i = 0, l = possibleMoves.length; i < l; i++) {
             if (possibleMoves[i][0] === newC && possibleMoves[i][1] === newR) {
 
                 if (causesJump(lastC, lastR, newC, newR)) {
                     return false
                 }
-            
+
                 setGameStateArray((prevArray) => {
                     let newArray = [...prevArray]
+                    let spotTaken = `${prevArray[newR][newC]}`
 
-                    if (newArray[newR][newC] === 'wk') {
+                    if (spotTaken === 'wk' && thisPiece !== 'wk') {
                         alert("Black wins!");
                         setTurn('')
-                    } else if (newArray[newR][newC] === 'bk') {
+                    } else if (spotTaken === 'bk' && thisPiece !== 'bk') {
                         alert("White wins!");
                         setTurn('')
                     }
@@ -155,7 +247,9 @@ function Board() {
                     clearPossibleMoves={clearPossibleMoves}
                     savePossibleMoves={savePossibleMoves} 
                     changeTurn={changeTurn}
-                    turn={turn} />
+                    turn={turn}
+                    castleStatus={castleStatus}
+                    setCastleStatus={setCastleStatus} />
         )
     })
 
@@ -173,7 +267,8 @@ function Board() {
                         possibleMoves={possibleMoves}
                         col={c}
                         row={r}
-                        causesJump={causesJump} />
+                        causesJump={causesJump} 
+                        gameStateArray={gameStateArray} />
                 )
             })
         )

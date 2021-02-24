@@ -48,16 +48,95 @@ function Piece(props) {
         let row = indexCoordinates(props.mouseY, 1)
 
         if (props.validMove(lastMove[0], lastMove[1], col, row, props.pieceColor, props.pieceType)) {
+            // If this disables the castle 
+            /*--------------------------------------------------------*/
+            let thisPiece = `${props.pieceColor + props.pieceType}`
+            if (thisPiece === 'br') {
+                props.setCastleStatus((prevStatus) => {
+                    let newStatus = [...prevStatus]
+                    console.log("Black Rook moved, no more castling here...")
+                    if (col === 0 && row === 0) {
+                        newStatus[0][0] = false
+                    } else if (col === 7 && row === 0) {
+                        newStatus[0][2] = false
+                    } 
+                    return newStatus
+                })
+            } else if (thisPiece === 'wr') {
+                    props.setCastleStatus((prevStatus) => {
+                        let newStatus = [...prevStatus]
+                        console.log("White Rook moved, no more castling here...")
+                        if (col === 0 && row === 7) {
+                            newStatus[1][0] = false
+                        } else if (col === 7 && row === 7) {
+                            newStatus[1][2] = false
+                        }
+                        return newStatus 
+                })
+            } else if (thisPiece === 'bk' && !(col === 2 && row === 0) && !(col === 6 && row === 0)) {
+                props.setCastleStatus((prevStatus) => {
+                    let newStatus = [...prevStatus]
+                    console.log("Black King moved, no more castling here...")
+                    newStatus[0][1] = false
+                    return newStatus
+                })
+            } else if (thisPiece === 'wk' && !(col === 2 && row === 7) && !(col === 6 && row === 7)) {
+                props.setCastleStatus((prevStatus) => {
+                    let newStatus = [...prevStatus]
+                    console.log("White King moved, no more castling here...")
+                    newStatus[1][1] = false
+                    return newStatus 
+                })
+            }
+            /*----------------------------------------------------------------*/
+
             // Put in new position
             setCoordinates([(col * props.tileSize) + props.boardCoords[0], (row * props.tileSize) + props.boardCoords[1]])
             props.changeTurn()
             setLastMove([col, row])
+
         } else {
             // Put in previous spot
             setCoordinates([props.boardCoords[0] + (lastMove[0] * props.tileSize), props.boardCoords[1] + (lastMove[1] * props.tileSize)])
         }
     }
 
+    // Listen for a castleStatus update, and move me one time
+    useEffect(() => {
+        // Make sure the rook exists!
+        // Make sure they back row is open
+        if (props.pieceType === 'r' && lastMove) {
+            if (lastMove[0] === 0 && lastMove[1] === 0 && props.castleStatus[0][0] === true) {
+                if (props.castleStatus[0][0] !== false && props.castleStatus[0][1] !== false && props.castleStatus[0][2] !== false) {
+                    //console.log("Castle the top left rook")
+                    setCoordinates([(3 * props.tileSize) + props.boardCoords[0], (0 * props.tileSize) + props.boardCoords[1]])
+                    setLastMove([3, 0])
+                    return
+                }
+            } else if (lastMove[0] === 7 && lastMove[1] === 0 && props.castleStatus[0][2] === true) {
+                if (props.castleStatus[0][0] !== false && props.castleStatus[0][1] !== false && props.castleStatus[0][2] !== false) {
+                    //console.log("Castle the top right rook")
+                    setCoordinates([(5 * props.tileSize) + props.boardCoords[0], (0 * props.tileSize) + props.boardCoords[1]])
+                    setLastMove([5, 0])
+                    return
+                }
+            } else if (lastMove[0] === 0 && lastMove[1] === 7 && props.castleStatus[1][0] === true) {
+                if (props.castleStatus[1][0] !== false && props.castleStatus[1][1] !== false && props.castleStatus[1][2] !== false) {
+                    //console.log("Castle the bot left rook"
+                    setCoordinates([(3 * props.tileSize) + props.boardCoords[0], (7 * props.tileSize) + props.boardCoords[1]])
+                    setLastMove([3, 7])
+                    return
+                }
+            } else if (lastMove[0] === 7 && lastMove[1] === 7 && props.castleStatus[1][2] === true) {
+                if (props.castleStatus[1][0] !== false && props.castleStatus[1][1] !== false && props.castleStatus[1][2] !== false) {
+                    // console.log("Castle the bot right rook")
+                    setCoordinates([(5 * props.tileSize) + props.boardCoords[0], (7 * props.tileSize) + props.boardCoords[1]])
+                    setLastMove([5, 7])
+                    return
+                }
+            }
+        }
+    }, [props.castleStatus])
 
     // Follow the mouse around
     function updatePosition() {
