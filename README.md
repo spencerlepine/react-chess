@@ -16,9 +16,3 @@ Play chess in the browser by with drag and drop moves. This was created using th
 >```moveList.js``` contains an object addressed by [```pieceType```] to return valid chess moves.
 
 > Users drag and drop a piece each turn, and the ```gameStateArray``` will save that move.
-
-***
-#### Todo:
-- add sound?
-- flip board?
-- Better sprites: [PNG to SVG](https://www.pngtosvg.com/)
