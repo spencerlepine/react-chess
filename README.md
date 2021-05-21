@@ -4,6 +4,12 @@ Play chess in the browser by with drag and drop moves. This was created using th
 
 ![Game Screenshot](./screenshot.jpg)
 
+### Setup:
+- ```git clone https://github.com/spencerlepine/react-chess.git```
+- ```cd react-chess```
+- ```npm install```
+- ```npm start```
+
 ### Overview:
 ```<Board />``` component tracks the game state with an 2D 8x8 ```array```.  
 * ```<Piece />``` components are displayed based on coordinates.
